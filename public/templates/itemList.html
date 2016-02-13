@@ -1,0 +1,27 @@
+<div>
+    <table class="table items-table table-hover table-condensed table-striped table-bordered">
+        <caption>Items</caption>
+        <thead>
+        <tr>
+            <th>No.</th>
+            <th>Name</th>
+            <th>Price ($)</th>
+            <th>Price (₪)</th>
+            <th>State</th>
+            <th>Image</th>
+            <th>Add to cart</th>
+        </tr>
+        </thead>
+        <tr ng-repeat="item in items">
+            <td ng-bind="item.id"></td>
+            <td ng-bind="item.name"></td>
+            <td ng-bind="item.price"></td>
+            <td angular-odometer data-odometer="item.priceCalculated"></td>
+            <td ng-bind="item.state"></td>
+            <td><img style="width: 3em; height: 3em;" src="{{item.imgUrl}}"/></td>
+            <td><span class="btn btn-success glyphicon glyphicon-shopping-cart" type="button" ng-click="addToCart(item)" /></td>
+        </tr>
+        <tbody>
+        </tbody>
+    </table>
+</div>

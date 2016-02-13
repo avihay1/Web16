@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+    <link rel="stylesheet" href="stylesheets/odometer-theme-default.css"/>
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <script src="javascripts/vendors/jquery-1.11.3.js"></script>
+    <script src="javascripts/angular.min.js"></script>
+    <script src="javascripts/angular-route.min.js"></script>
+    <script src="javascripts/odometer.min.js"></script>
+    <script src="javascripts/angular-odometer.min.js"></script>
+    <script src="javascripts/shopApp.js"></script>
+    <script src="javascripts/controllers.js"></script>
+    <script src='javascripts/vendors/socket.io/socket.io.js'></script>
+    <link rel="stylesheet" href="javascripts/vendors/bootstrap/css/bootstrap.min.css">
+    <script src="javascripts/vendors/bootstrap/js/bootstrap.min.js"></script>
+</head>
+
+<body ng-app="shopApp" ng-init="shared={}">
+    <div id="main" ng-controller="homeController">
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <ul class="nav nav-pills">
+                    <li class="active"><a data-toggle="pill" href="#/items">Items</a></li>
+                    <li class="active"><a  data-toggle="pill" href="#/cart">My Cart</a ></li>
+                    <li><a class="btn-info" href="/admin">Login</a></li>
+                    <%
+                        if (user === true){
+                        %>
+                            <li><a href="/logout">Logout</a></li>
+                        <%
+                        }
+                     %>
+                    <li class="navbar-right rates"><span  class="form-control">1$ = <label  angular-odometer data-odometer="rate.dollar"></label> ₪</span></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="container" ng-view></div>
+
+    <div class="tab-content">
+        <div id="items" class="tab-pane fade in active">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-offset-2 col-md-8">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="cart" class="tab-pane fade">
+            <div class="middle container">
+                <div class="row">
+                    <div class="col-md-offset-2 col-md-6">
+// was cart
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="progress col-md-offset-2">
+                    <div class=" card-progress-bar progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                    <div class="alert alert-success message-success">
+                        <strong>Success!</strong> transaction completed. <span class="message-total-price"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="login" class="tab-pane">
+            <div class="middle container">
+                <div class="row">
+                    <div class="col-md-offset-2 col-md-6">
+                        <form class="form-inline well login" action="/login" method="POST">
+                            <div class="form-horizontal">
+                                <label>Username</label>
+                                <input name="username" class="form-control" type="text"/>
+                            </div>
+                            <div class="form-control-static">
+                                <label>Password</label>
+                                <input name="password" class="form-control" type="password"/>
+                            </div>
+                            <div>
+                                <button class="btn btn-success pull-right">Login</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="buyModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Modal Header</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Please enter credit card number : </p>
+                    <input class="credit-card" type="text">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-default" onclick="purchase()">Purchase</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

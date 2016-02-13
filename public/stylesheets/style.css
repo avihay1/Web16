@@ -1,0 +1,42 @@
+/* Place your custom CSS here */
+body{
+    font-family: cursive;
+}
+
+
+.item-pic{
+    width: 30px;
+    height: 30px;
+}
+
+.templates{
+    display: none;
+}
+
+.rates{
+    padding-top: 8px;
+}
+
+.progress{
+    display: none;
+    width: 67%;
+}
+.message-success{
+    display: none;
+}
+
+table{
+    text-align: center;
+}
+
+.middle{
+    padding-top: 6%;
+}
+
+.login{
+    width: 70%;
+}
+
+.login button {
+    margin-top: -17%;
+}

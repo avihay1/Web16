@@ -1,0 +1,34 @@
+<div>
+    <div ng-show="shared.cart.length == 0">
+        <label>Your shopping cart is empty.</label>
+    </div>
+    <table ng-show="shared.cart.length > 0" class="table cart-table table-hover table-condensed table-striped table-bordered">
+        <caption>My Cart</caption>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price ($)</th>
+            <th>Image</th>
+            <th>Remove item</th>
+        </tr>
+        </thead>
+        <tfoot>
+        <tr>
+            <td>Total price : </td>
+            <td ng-bind="shared.totalPrice"></td>
+            <td>
+                <button class="btn btn-info buy" data-toggle="modal" ng-click="validateCart()">Buy</button>
+                <button class="btn btn-danger" ng-click="emptyCart()">Remove All</button>
+            </td>
+        </tr>
+        </tfoot>
+        <tbody>
+        <tr ng-repeat="item in shared.cart track by $index">
+            <td ng-bind="item.name"></td>
+            <td ng-bind="item.price"></td>
+            <td><img style="width: 3em; height: 3em;" src="{{item.imgUrl}}"/></td>
+            <td><button class="btn btn-danger" ng-click="removeItem(item)"><span class="glyphicon glyphicon-minus"></span></button></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
