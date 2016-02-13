@@ -17,7 +17,7 @@
             <td>Total price : </td>
             <td ng-bind="shared.totalPrice"></td>
             <td>
-                <button class="btn btn-info buy" data-toggle="modal" ng-click="validateCart()">Buy</button>
+                <button class="btn btn-info buy" data-toggle="modal" ng-click="purchase()">Buy</button>
                 <button class="btn btn-danger" ng-click="emptyCart()">Remove All</button>
             </td>
         </tr>
@@ -31,4 +31,23 @@
         </tr>
         </tbody>
     </table>
+
+    <script type="text/ng-template" id="purchaseModal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Checkout</h3>
+        </div>
+        <div class="modal-body">
+            <div class="form form-group">
+                <label>Personal information</label>
+                <input ng-model="order.customerName" class="form-control" placeholder="Name                           {Letters and numbers}"/>
+                <input ng-model="order.address" class="form-control" placeholder="Address                       {Letters and numbers}"/>
+                <input ng-model="order.creditCard" class="form-control" placeholder="Credit card number     {16 numbers}"/>
+            </div>
+            <label style="color: #ec001b;" ng-bind="error" ng-show="error.length"></label>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="buy()">Buy</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
 </div>

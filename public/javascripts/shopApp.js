@@ -1,7 +1,7 @@
 /**
  * Created by avihay on 1/15/2016.
  */
-var shopApp = angular.module('shopApp', ['ui.odometer','ngRoute']);
+var shopApp = angular.module('shopApp', ['ngAnimate','ui.odometer','ui.bootstrap','ngRoute']);
 
 shopApp.directive('angularOdometer', function () {
     return {
@@ -26,6 +26,10 @@ shopApp.config(['$routeProvider', '$locationProvider',
             .when('/items', {
                 templateUrl: 'templates/itemList.html',
                 controller: 'itemsController'
+            })
+            .when('/statistics', {
+                templateUrl: 'templates/statistics.html',
+                controller: 'statisticsController'
             })
             .when('/cart', {
                 templateUrl: 'templates/cart.html',

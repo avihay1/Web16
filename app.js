@@ -5,7 +5,6 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var db = require('./model/db');
-var users = require('./routes/users');
 var homeCtrl = require('./controllers/homeController');
 var app = express();
 
@@ -22,8 +21,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 homeCtrl.initPassport(app);
 var routes = require('./routes/index');
+var items = require('./routes/items');
+var orders = require('./routes/orders');
 app.use('/', routes);
-app.use('/users', users);
+app.use('/items', items);
+app.use('/orders', orders);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

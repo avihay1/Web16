@@ -6,7 +6,6 @@ var homeCtrl = require('../controllers/homeController');
 /* GET home page. */
 
 
-
 function respondWithResource(err, resource, res) {
   if (!err) res.send(resource);
   else res.sendStatus(500);
@@ -15,10 +14,6 @@ function respondWithResource(err, resource, res) {
 router.get('/', function(req, res, next) {
   var loggedIn = !!req.user;
   res.render('index', {title: 'stam', user: loggedIn});
-});
-
-router.get('/items', function (req, res){
-
 });
 
 router.get('/rate', function (req, res) {

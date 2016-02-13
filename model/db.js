@@ -60,13 +60,8 @@ var model = {};
         model.Item.findOneAndRemove({_id: id}, successCallback);
     };
 
-    model.addOrder = function (customerName, address, creditCard, items, successCallback) {
-        var newOrder = new model.Order({
-            customerName: customerName,
-            address: address,
-            creditCard: creditCard,
-            items: items
-        });
+    model.addOrder = function (order, successCallback) {
+        var newOrder = new model.Order(order);
 
         newOrder.save(successCallback);
     };
@@ -78,6 +73,7 @@ var model = {};
 
     model.getOrders = function (identifier, resultsCallback) {
         var identifier = identifier || {};
+        var resultsCallback = resultsCallback || identifier;
         model.Order.find(identifier, resultsCallback);
     };
 })(module.exports);
