@@ -27,7 +27,7 @@ router.post('/delete', function (req, res){
   itemCtrl.removeItem(req.body.id, successCallback(res));
 });
 
-router.post('update', function (req, res){
+router.post('/update', function (req, res){
   itemCtrl.updateItem(req.body.item, successCallback(res));
 });
 

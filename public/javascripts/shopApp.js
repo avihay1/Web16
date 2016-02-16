@@ -27,9 +27,21 @@ shopApp.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'templates/itemList.html',
                 controller: 'itemsController'
             })
+            .when('/modifyItem/:itemId', {
+                templateUrl: 'templates/modifyItem.html',
+                controller: 'modifyItemController'
+            })
             .when('/statistics', {
                 templateUrl: 'templates/statistics.html',
                 controller: 'statisticsController'
+            })
+            .when('/graph', {
+                templateUrl: 'templates/graph.html',
+                controller: 'graphController'
+            })
+            .when('/orders', {
+                templateUrl: 'templates/orderList.html',
+                controller: 'ordersController'
             })
             .when('/cart', {
                 templateUrl: 'templates/cart.html',

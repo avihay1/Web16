@@ -11,4 +11,8 @@
         db.addOrder(order, successCallback);
     };
 
+    orderController.getBestCustomer = function (resultsCallback) {
+        db.getBestCustomer(resultsCallback);
+    };
+
 })(module.exports);

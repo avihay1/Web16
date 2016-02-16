@@ -25,12 +25,13 @@ controllers.cartController = function ($scope, $uibModal){
     };
 
 
-    $scope.addToCart = function (item) {
+    // DEBUG ONLY
+   /* $scope.addToCart = function (item) {
         $scope.shared.cart.push(item);
         $scope.shared.totalPrice = (+$scope.shared.totalPrice + item.price).toFixed(2);
     };
 
-    $scope.addToCart($scope.shared.items[0]);
+    $scope.addToCart($scope.shared.items[0]);*/
 
 };
 
@@ -73,17 +74,56 @@ controllers.purchaseModalController = function($scope, $uibModalInstance, $http)
     };
 };
 
-controllers.itemsController = function ($scope) {
+controllers.itemsController = function ($scope, $location, $http) {
+    $scope.search = {};
     $scope.items = $scope.shared.items || [];
+    $scope.filteredItems = $scope.items.slice(0);
+
+    $scope.filterItems = function () {
+        $scope.filteredItems = $scope.items.slice(0);
+        if (!$scope.search.name && !$scope.search.state && (!$scope.search.price && $scope.search.price != 0)) return;
+        for (var i = 0; i < $scope.items.length; i++) {
+            if (
+                !((!$scope.search.name || ($scope.search.name && $scope.items[i].name.toLowerCase().indexOf($scope.search.name.toLowerCase()) != -1)) &&
+                (!$scope.search.state || ($scope.search.state && $scope.items[i].state.indexOf($scope.search.state) != -1)) &&
+                ((!$scope.search.price && $scope.search.price != 0) || $scope.items[i].price == $scope.search.price))
+            )
+                $scope.filteredItems.splice( $scope.filteredItems.indexOf($scope.items[i]), 1);
+        }
+    };
 
     $scope.addToCart = function (item) {
         $scope.shared.cart.push(item);
         $scope.shared.totalPrice = (+$scope.shared.totalPrice + item.price).toFixed(2);
     };
+
+    $scope.update = function (item) {
+        $location.path("/modifyItem/"+$scope.shared.items.indexOf(item));
+    };
+
+    $scope.createItem = function () {
+        $location.path("/modifyItem/?");
+    };
+
+    $scope.delete = function (item) {
+        var res = confirm("Are you sure you want to permanently delete " + item.name + "?");
+        if (res)
+            $http.post("items/delete", {id: item._id}).then(function (response) {
+                alert("Deleted successfully!");
+                var index = $scope.shared.items.indexOf(item);
+                $scope.shared.items.splice(index, 1);
+                $scope.items = $scope.shared.items;
+                $scope.filteredItems = $scope.items.slice(0);
+            }, function () {
+                alert("Could not delete item!");
+            });
+    }
 };
 
 controllers.homeController = function ($scope, $http) {
-    $scope.rate = {dollar: 3.54};
+    $scope.shared.rate = $scope.rate = {dollar: 3.54};
+    $scope.loading = true;
+
     if (!$scope.shared.cart ) {
         $scope.shared.cart = [];
         $scope.shared.totalPrice = 0;
@@ -92,6 +132,7 @@ controllers.homeController = function ($scope, $http) {
 
     if ($scope.items.length === 0) {
         $http.get('items/list').then(function (response) {
+            $scope.loading = false;
             var items = response.data;
             $scope.items = [];
             for (var i = 0; i < items.length; i++) {
@@ -108,7 +149,7 @@ controllers.homeController = function ($scope, $http) {
     };
 
     $scope.$watch('rate.dollar', function () {
-        console.log("Dollar rate changed!");
+        //console.log("Dollar rate changed!");
         if ($scope.items) {
             $scope.items.forEach(function (item) {
                 item.priceCalculated = (item.price * $scope.rate.dollar).toFixed(2);
@@ -118,7 +159,7 @@ controllers.homeController = function ($scope, $http) {
 
     var socket = io('http://localhost:3000');
     function handleRateChange(newRate) {
-        $scope.rate.dollar = +newRate;
+        $scope.shared.rate.dollar = $scope.rate.dollar = +newRate;
         $scope.$apply();
     }
 
@@ -127,7 +168,7 @@ controllers.homeController = function ($scope, $http) {
     socket.on('rates', handleRateChange);
 };
 
-controllers.statisticsController = function ($scope, $http) {
+controllers.graphController = function ($scope, $http) {
     var tooltip;
     var dim;
     d3.select(window).on('resize', function () {
@@ -183,10 +224,12 @@ controllers.statisticsController = function ($scope, $http) {
         {
             var vIndex = parsed_data.nodes.push({ "x": j, "y": j, "name": orders[j].customerName, "picture": "images/customer.png", "fill": "blue"}) - 1;
             for (var k = 0; k < orders[j].items.length; k++) {
-                parsed_data.links.push({
-                    "source": vItems[orders[j].items[k]._id].vIndex,
-                    "target": vIndex
-                });
+                if (vItems[orders[j].items[k]._id]) {
+                    parsed_data.links.push({
+                        "source": vItems[orders[j].items[k]._id].vIndex,
+                        "target": vIndex
+                    });
+                }
             }
         }
 
@@ -498,5 +541,88 @@ controllers.statisticsController = function ($scope, $http) {
         }
     }
 };
+
+controllers.modifyItemController = function ($scope, $routeParams, $http) {
+    var target = "items/";
+    if (!$routeParams.itemId || isNaN(+$routeParams.itemId + 1)) {
+        $scope.item = {};
+        target += "add";
+    }
+    else {
+        $scope.item = $scope.shared.items[+$routeParams.itemId];
+        target += "update";
+    }
+
+    $scope.saveChanges = function () {
+        $http.post(target, {item: $scope.item}).then(function (response) {
+            $scope.error = $scope.result = "";
+            $scope.item.id = $scope.shared.items.length;
+            $scope.shared.items.push($scope.item);
+            $scope.result = "Successfully saved.";
+        }, function () {
+            $scope.error = $scope.result = "";
+            $scope.error = "Could not save. Try again later.";
+        });
+    }
+};
+
+controllers.ordersController = function ($scope, $http) {
+
+    $http.get('orders/list').then(function (response) {
+        $scope.loading = false;
+        var orders = response.data;
+        $scope.orders = [];
+
+        var itemIdToPrice = {};
+
+        // Map item to price
+        for (var i = 0; i < $scope.shared.items.length; i++){
+            itemIdToPrice[$scope.shared.items[i]._id] = $scope.shared.items[i].price;
+        }
+
+        for (var i = 0; i < orders.length; i++) {
+            var totalPrice = 0;
+            orders[i].id = i;
+
+            for (var j = 0; j < orders[i].items.length; j++) {
+                totalPrice += itemIdToPrice[orders[i].items[j]._id];
+            }
+
+            orders[i].calculatedTotalPrice = (totalPrice * $scope.shared.rate.dollar).toFixed(2);
+            orders[i].totalPrice = totalPrice.toFixed(2);
+            $scope.orders.push(orders[i]);
+        }
+
+        $scope.filteredOrders = $scope.orders.slice(0);
+    });
+
+
+    $scope.filterOrders = function () {
+        $scope.filteredOrders = $scope.orders.slice(0);
+        if (!$scope.search.customerName &&
+            (!$scope.search.totalPrice && $scope.search.totalPrice != 0) &&
+            (!$scope.search.claculatedTotalPrice && $scope.search.claculatedTotalPrice != 0)) return;
+
+        for (var i = 0; i < $scope.orders.length; i++) {
+
+            if (($scope.search.customerName && $scope.orders[i].customerName.toLowerCase().indexOf($scope.search.customerName.toLowerCase()) == -1) ||
+                (($scope.search.totalPrice || $scope.search.totalPrice == 0) && $scope.orders[i].totalPrice != $scope.search.totalPrice) ||
+                (($scope.search.calculatedTotalPrice || $scope.search.calculatedTotalPrice == 0) && $scope.orders[i].calculatedTotalPrice != $scope.search.calculatedTotalPrice)){
+                $scope.filteredOrders.splice( $scope.filteredOrders.indexOf($scope.orders[i]), 1);
+            }
+        }
+    };
+
+};
+
+controllers.statisticsController = function ($scope, $http) {
+    $http.get('orders/bestCustomer').then(function (response) {
+        $scope.result = response.data;
+    }, function () {
+        $scope.result = "Could not fetch data.";
+    })
+};
+
+controllers.empty = function () {};
 
 shopApp.controller(controllers);

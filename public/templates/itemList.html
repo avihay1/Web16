@@ -1,6 +1,21 @@
 <div>
+    <div>
+        <div>
+
+        </div>
+        <div>
+            <span>
+                <label>Search</label>
+                <input placeholder="Price" type="number" ng-model="search.price"/>
+                <input placeholder="Name" ng-model="search.name"/>
+                <input placeholder="State" ng-model="search.state"/>
+                <button class="circularBorder" ng-click="filterItems()"><span class="glyphicon glyphicon-search"></span></button>
+            </span>
+        </div>
+    </div>
+
     <table class="table items-table table-hover table-condensed table-striped table-bordered">
-        <caption>Items</caption>
+        <caption>Items <button class="btn btn-info" ng-click="createItem()">New <span class="glyphicon glyphicon-plus"></span></button></caption>
         <thead>
         <tr>
             <th>No.</th>
@@ -9,17 +24,21 @@
             <th>Price (₪)</th>
             <th>State</th>
             <th>Image</th>
-            <th>Add to cart</th>
+            <th ng-show="!shared.loggedIn">Add to cart</th>
+            <th ng-show="shared.loggedIn">Edit</th>
+            <th ng-show="shared.loggedIn">Delete</th>
         </tr>
         </thead>
-        <tr ng-repeat="item in items">
+        <tr ng-repeat="item in filteredItems">
             <td ng-bind="item.id"></td>
             <td ng-bind="item.name"></td>
             <td ng-bind="item.price"></td>
             <td angular-odometer data-odometer="item.priceCalculated"></td>
             <td ng-bind="item.state"></td>
             <td><img style="width: 3em; height: 3em;" src="{{item.imgUrl}}"/></td>
-            <td><span class="btn btn-success glyphicon glyphicon-shopping-cart" type="button" ng-click="addToCart(item)" /></td>
+            <td ng-show="!shared.loggedIn"><span class="btn btn-success glyphicon glyphicon-shopping-cart" type="button" ng-click="addToCart(item)" /></td>
+            <td ng-show="shared.loggedIn"><span class="btn btn-warning glyphicon glyphicon-pencil" type="button" ng-click="update(item)" /></td>
+            <td ng-show="shared.loggedIn"><span class="btn btn-danger glyphicon glyphicon-minus" type="button" ng-click="delete(item)" /></td>
         </tr>
         <tbody>
         </tbody>

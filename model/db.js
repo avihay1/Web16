@@ -36,13 +36,14 @@ var model = {};
         imgUrl: String
     });
 
+    var bestCustomer = "ABC";
 
 
     schemas.orderSchema = new mongoose.Schema({
         customerName: String,
         address: {street: String, number: String},
         creditCard: {number: String, exprireDate: String},
-        items: [{itemID: {type: mongoose.Schema.Types.ObjectId, ref: 'Item'}}]
+        items: [schemas.poductSchema]
     });
 
     model.Item = mongoose.model('Item', schemas.poductSchema);
@@ -53,7 +54,7 @@ var model = {};
     };
 
     model.updateItem = function (item, successCallback) {
-        model.Item.findOneAndUpdate({"_id": item.id}, item, {}, successCallback);
+        model.Item.findOneAndUpdate({"_id": item._id}, item, {}, successCallback);
     };
 
     model.removeItem = function (id, successCallback){
@@ -75,5 +76,10 @@ var model = {};
         var identifier = identifier || {};
         var resultsCallback = resultsCallback || identifier;
         model.Order.find(identifier, resultsCallback);
+    };
+
+    model.getBestCustomer = function (resultsCallback) {
+        var bestCutsomer = model.Order.aggregate( [ { $group : { _id : "$items.count", name: {$push: "$$ROOT"} } } ]);
+        resultsCallback(null, bestCustomer);
     };
 })(module.exports);

@@ -1,0 +1,35 @@
+<div>
+    <div>
+        <div>
+            <span>
+                <label>Search</label>
+                <input placeholder="Customer name"  ng-model="search.customerName"/>
+                <input placeholder="Total Price ($)" type="number" ng-model="search.totalPrice"/>
+                <input placeholder="Total Price (₪)" type="number" ng-model="search.calculatedTotalPrice"/>
+                <button class="circularBorder" ng-click="filterOrders()"><span class="glyphicon glyphicon-search"></span></button>
+            </span>
+        </div>
+    </div>
+
+    <table class="table items-table table-hover table-condensed table-striped table-bordered">
+        <caption>Items</caption>
+        <thead>
+        <tr>
+            <th>No.</th>
+            <th>Name</th>
+            <th>Total Price ($)</th>
+            <th>Total Price (₪)</th>
+            <th>Image</th>
+        </tr>
+        </thead>
+        <tr ng-repeat="order in filteredOrders">
+            <td ng-bind="order.id"></td>
+            <td ng-bind="order.customerName"></td>
+            <td ng-bind="order.totalPrice"></td>
+            <td ng-bind="order.calculatedTotalPrice"></td>
+            <td><img style="width: 3em; height: 3em;" src="images/customer.png"/></td>
+        </tr>
+        <tbody>
+        </tbody>
+    </table>
+</div>
